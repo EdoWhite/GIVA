@@ -103,8 +103,6 @@ def chat(asr_model, tts_model, tts_vocoder, gpt_model, openAI_key, audio):
 title="GIVA - GPT-based Vocal Virtual Assistant"
 
 description = """
-Your GPT-based vocal assistant. Speech recognition is performed with the <b>openai/whisper-base model</b>, while Text-to-Speech with <b>microsoft/speecht5_tts</b>.
-
 GIVA is a vocal assistant that combines speech recognition and text-to-speech with the capabilities of GPT (3.5-turbo or 4). Prompts are engineered so that GPT provides outputs that are short and adapted to be converted to audio.
 
 ### Features:
