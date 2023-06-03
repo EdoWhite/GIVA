@@ -68,7 +68,7 @@ def textToSpeech(tts_model, tts_vocoder, text):
     return (16000, speech)
 
 
-def get_completion(prompt, model):
+def get_completion(prompt, model, temperature, max_tokens, presence_penality, frequency_penality):
     messages = [
         {"role": "user", 
          "content": prompt + ". Keep the answer short and concise, please. Keep the answer short and concise, please. Also consider that your output will be converted into audio, so make sure to provide a text that makes sense even if listened."
@@ -77,12 +77,15 @@ def get_completion(prompt, model):
     response = openai.ChatCompletion.create(
         model=model,
         messages=messages,
-        temperature=0, # this is the degree of randomness of the model's output
+        temperature=temperature,
+        max_tokens=max_tokens,
+        presence_penality=presence_penality,
+        frequency_penality=frequency_penality
     )
     return response.choices[0].message["content"]
 
 
-def chat(asr_model, tts_model, tts_vocoder, gpt_model, openAI_key, audio):
+def chat(asr_model, tts_model, tts_vocoder, gpt_model, temperature, max_tokens, presence_penality, frequency_penality, openAI_key, audio):
     if openAI_key != "":
         openai.api_key = openAI_key
     else:
@@ -92,7 +95,7 @@ def chat(asr_model, tts_model, tts_vocoder, gpt_model, openAI_key, audio):
         # Automatic Speech Recognition
         prompt = transcript(asr_model, audio)
         # Get GPT Completion
-        generated_text = get_completion(prompt, gpt_model)
+        generated_text = get_completion(prompt, gpt_model, temperature, max_tokens, presence_penality, frequency_penality)
         # Text to Speech
         answer = textToSpeech(tts_model, tts_vocoder, generated_text)
         return prompt, generated_text, answer
@@ -157,6 +160,11 @@ onlyAudioOutputTab = gr.Interface(
         gr.Dropdown(["gpt-3.5-turbo", "gpt-4"], 
                     label="Select GPT Model", 
                     value="gpt-3.5-turbo"),
+        
+        gr.Slider(0, 2, value=1, label="Temperature", info="What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic."),
+        gr.Number(1000, label="Max Tokens", info="The maximum number of tokens to generate in the chat completion."),
+        gr.Slider(-2.0, 2.0, value=0, label="Presence Penality", info="Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics."),
+        gr.Slider(-2.0, 2.0, value=0, label="Frequency Penality", info="Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim."),
 
         gr.Text(label="Provide an OpenAI API Key", type="password"),
         gr.Audio(label="Record", source="microphone", type="numpy")
@@ -190,6 +198,11 @@ AudioTextOutput = gr.Interface(
         gr.Dropdown(["gpt-3.5-turbo", "gpt-4"], 
                     label="Select GPT Model", 
                     value="gpt-3.5-turbo"),
+        
+        gr.Slider(0, 2, value=1, label="Temperature", info="What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic."),
+        gr.Number(1000, label="Max Tokens", info="The maximum number of tokens to generate in the chat completion."),
+        gr.Slider(-2.0, 2.0, value=0, label="Presence Penality", info="Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far, increasing the model's likelihood to talk about new topics."),
+        gr.Slider(-2.0, 2.0, value=0, label="Frequency Penality", info="Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim."),
 
         gr.Text(label="Provide an OpenAI API Key", type="password"),
         gr.Audio(label="Record", source="microphone", type="numpy")
