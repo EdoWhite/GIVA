@@ -1,5 +1,9 @@
 # GIVA - GPT-based Vocal Virtual Assistant
 
+<img src="./IMG/GIVA_app.png">
+
+## Overview
+
 GIVA is a vocal assistant that combines speech recognition and text-to-speech with the capabilities of GPT (3.5-turbo or 4). Prompts are engineered so that GPT provides outputs that are short and adapted to be converted to audio.
 
 ## Features:
