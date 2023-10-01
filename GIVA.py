@@ -70,8 +70,11 @@ def textToSpeech(tts_model, tts_vocoder, text):
 
 def get_completion(prompt, model, temperature, max_tokens, presence_penality, frequency_penality):
     messages = [
+        {"role": "system",
+         "content": "you are a voice assistant. Keep the answer short and concise, please. Also consider that your output will be converted into audio, so make sure to provide a text that makes sense even if listened."
+         },
         {"role": "user", 
-         "content": prompt + ". Keep the answer short and concise, please. Keep the answer short and concise, please. Also consider that your output will be converted into audio, so make sure to provide a text that makes sense even if listened."
+         "content": prompt
          }
         ]
     response = openai.ChatCompletion.create(
